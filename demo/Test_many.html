@@ -1,0 +1,14 @@
+<h1>Test hello</h1>
+<div href="Test_HelloWorld.html"></div>
+<h1>Test goodbye</h1>
+<div href="Test_GoodbyeWorld.html"></div>
+
+<script>
+  (async function () {
+    for (let test of document.querySelectorAll("div:not([off])")) {
+      const href = new URL(test.getAttribute('href'), location.href);
+      test.innerHTML = await (await fetch(href)).text();
+    }
+  })();
+</script>
+<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML/TestHTML.js"></script>
