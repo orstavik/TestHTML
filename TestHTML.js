@@ -31,6 +31,10 @@ const template = `
 
 class TestHTML extends HTMLElement {
 
+  static stringify(ar){
+    return `\n    [\n${ar.map(row => `      ${JSON.stringify(row)}`).join(',\n')}\n    ]\n`;
+  }
+
   static #count = 0;
   #id = TestHTML.#count++;
 
@@ -45,7 +49,7 @@ class TestHTML extends HTMLElement {
     window.addEventListener('message', e => this.onMessage(e));
     this.shadowRoot.addEventListener('dblclick', e => this.onDblclick(e));
     this.shadowRoot.getElementById('clipboard').addEventListener('click',
-      _ => navigator.clipboard.writeText(JSON.stringify(this.#resultObj))
+      _ => navigator.clipboard.writeText(TestHTML.stringify(this.#resultObj))
     );
   }
 
@@ -58,8 +62,8 @@ class TestHTML extends HTMLElement {
   }
 
   render() {
-    const result = JSON.stringify(this.#resultObj, null, 3);
-    const expected = JSON.stringify(JSON.parse(this.#expected.textContent), null, 3);
+    const result = TestHTML.stringify(this.#resultObj);
+    const expected = TestHTML.stringify(JSON.parse(this.#expected.textContent));
     this.setAttribute('ok', expected === result);
   }
 

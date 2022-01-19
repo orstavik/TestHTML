@@ -29,7 +29,7 @@
 </test-html>
 
 <!-- Note!! You must load the test-html component at the end -->
-<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML/TestHTML.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML@v1.0.0/TestHTML.js"></script>
 ```
 
 The thing you are testing is the `console.log(..)` outputs from the `HelloWorld.html` file.
@@ -57,7 +57,7 @@ You can add more than one test in the same test file, of course.
 </test-html>
 
 <!-- Note!! You must load the test-html component at the end -->
-<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML/TestHTML.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML@v1.0.0/TestHTML.js"></script>
 ```
 
 The thing you are testing is the `console.log(..)` outputs from the `HelloWorld.html` file.
@@ -72,7 +72,7 @@ You can run two or more test files together by making an aggregate file. You don
 <h1>Test goodbye</h1>
 <div href="Test_GoodbyeWorld.html"></div>
 
-<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML/TestHTML.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML@v1.0.0/TestHTML.js"></script>
 <script>
   (async function () {
     for (let test of document.querySelectorAll("div:not([off])")) {
