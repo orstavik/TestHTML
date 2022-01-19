@@ -82,3 +82,41 @@ You can run two or more test files together by making an aggregate file. You don
   })();
 </script>
 ```
+
+## Example: make a self correcting test set
+
+Sometimes you do changes that you alter the print of several tests. You therefore want to copy paste the new result into your test. To do so, add the following script at the end of your test.html file. 
+
+```html
+<test-html test="HelloWorld.html">
+  <script expected>
+    [
+      "Hello WORLD",
+      [1, 2, 3]
+    ]
+  </script>
+</test-html>
+
+<test-html test="GoodbyeWorld.html">
+  <script expected>
+    ["wait for it"]
+  </script>
+</test-html>
+
+<!-- Note!! You must load the test-html component at the end -->
+<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML@v1.0.0/TestHTML.js"></script>
+<script>
+  setTimeout(async function () {
+    for (let el of document.querySelectorAll('test-html')) {
+      el.shadowRoot.getElementById('clipboard').click();
+      el.children[0].textContent = await navigator.clipboard.readText();
+      el.removeAttribute('ok');
+    }
+    console.log(document.body.innerHTML);
+  }, 1500);
+</script>
+```
+
+> Att!! If the focus is not on the window, then this function will fail. That is useful, so to void this function, set focus inside devtools and rerun the page.
+> 
+> Simply copy paste the printed result to and from your test.html file. 
