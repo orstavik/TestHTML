@@ -1,0 +1,19 @@
+<h1 id="hash">Hello HASH </h1>
+
+<style>
+    h1#hash {
+        color: blue;
+    }
+
+    h1:before {
+        content: "#";
+    }
+</style>
+
+<h1> &#9654 </h1>
+
+<script>
+  const h1 = document.querySelector("h1");
+  console.log(h1.innerText);
+  console.log("#");
+</script>
