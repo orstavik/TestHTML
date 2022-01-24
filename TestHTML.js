@@ -86,7 +86,7 @@ class TestHTML extends HTMLElement {
     const testTxt = await (await fetch(testUrl)).text();
     this.shadowRoot.getElementById("code").textContent = testTxt;
     const txt = `<base href='${testUrl}'/><script>(${consoleLogMonkey.toString()})();</script>${testTxt}`;
-    this.shadowRoot.getElementById("iframe").src = `data:text/html;charset=utf-8,${encodeURI(txt)}#${this.#id}`;
+    this.shadowRoot.getElementById("iframe").src = `data:text/html;charset=utf-8,${encodeURIComponent(txt)}#${this.#id}`;
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
