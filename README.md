@@ -122,7 +122,7 @@ Sometimes you do changes that you alter the print of several tests. You therefor
 > Simply copy paste the printed result to and from your test.html file. 
 
 
-#Example:  `#` character in the Data URL
+## Example:  `#` character in the Data URL
 
 We often use the `#` characters inside our files. This can be as an id selector sor CSS, HTML code for Unicode characters, or part of a link for `<a>` element.
  
