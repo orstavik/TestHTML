@@ -159,3 +159,9 @@ Using `<iframe>` and _Data URLs_ as sources can cause problems when interpreting
 ```
 
 To fix this behavior, the `#` character must be encoded using `.encodeURIComponent()` before being added to the Data URL. It replaces each `"#"` character with `"%23"`.
+
+## Problem with `<script src="http://localhost:666/what/web/server/is/doing">`?
+
+There are issues when you try to run the component against a local web server. The code is loaded in an iframe, that has a `src="data:..."` attribute. This iframe will not have the same rights as the browser window to load scripts from the server, and therefor is likely to be blocked by a local development server. Annoying.
+
+The alternative is to load your external scripts via `jsdelivr.net` or `unpkg.com`.
