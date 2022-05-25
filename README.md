@@ -160,8 +160,17 @@ Using `<iframe>` and _Data URLs_ as sources can cause problems when interpreting
 
 To fix this behavior, the `#` character must be encoded using `.encodeURIComponent()` before being added to the Data URL. It replaces each `"#"` character with `"%23"`.
 
-## Problem with `<script src="http://localhost:666/what/web/server/is/doing">`?
+## FAQ
 
-There are issues when you try to run the component against a local web server. The code is loaded in an iframe, that has a `src="data:..."` attribute. This iframe will not have the same rights as the browser window to load scripts from the server, and therefor is likely to be blocked by a local development server. Annoying.
+1. `Failed to load resource: the server responded with a status of 404 (Not Found)`
 
-The alternative is to load your external scripts via `jsdelivr.net` or `unpkg.com`.
+The problem here is likely to do with the server not reacting kindly to js files (or other resources) being loaded from within the iframe. 
+To make the test work in isolate, we use an `<iframe src="data:..">`. This means that it is a nice clean room for the test to run, but 
+also that local development servers on the localhost doesn't know what to do.
+
+If the problem is `localhost`, then the solution is:
+```
+npx http-server -p 6666 --cors
+```
+
+If the problem is an external script, then you should consider whether or not the script really needs to be cors protected. Maybe it is already freely available and cors readable via `jsdelivr.net` or `unpkg.com`? Or maybe you can only run tests against these scripts if you have them in a local development environment.
