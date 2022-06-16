@@ -28,7 +28,7 @@
 </test-html>
 
 <!-- Note!! You must load the test-html component at the end -->
-<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML@v1.0.2/TestHTML.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML@v1.0.3/TestHTML.js"></script>
 ```
 
 The thing you are testing is the `console.log(..)` outputs from the `HelloWorld.html` file.
@@ -56,7 +56,7 @@ You can add more than one test in the same test file, of course.
 </test-html>
 
 <!-- Note!! You must load the test-html component at the end -->
-<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML@v1.0.2/TestHTML.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML@v1.0.3/TestHTML.js"></script>
 ```
 
 The thing you are testing is the `console.log(..)` outputs from the `HelloWorld.html` file.
@@ -71,7 +71,7 @@ You can run two or more test files together by making an aggregate file. You don
 <h1>Test goodbye</h1>
 <div href="Test_GoodbyeWorld.html"></div>
 
-<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML@v1.0.2/TestHTML.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML@v1.0.3/TestHTML.js"></script>
 <script>
   (async function () {
     for (let test of document.querySelectorAll("div:not([off])")) {
@@ -103,7 +103,7 @@ Sometimes you do changes that you alter the print of several tests. You therefor
 </test-html>
 
 <!-- Note!! You must load the test-html component at the end -->
-<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML@v1.0.2/TestHTML.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML@v1.0.3/TestHTML.js"></script>
 <script>
   setTimeout(function () {
     for (let el of document.querySelectorAll('test-html')) {
@@ -155,7 +155,7 @@ Using `<iframe>` and _Data URLs_ as sources can cause problems when interpreting
 </test-html>
 
 <!-- Note!! You must load the test-html component at the end -->
-<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML@v1.0.2/TestHTML.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML@v1.0.3/TestHTML.js"></script>
 ```
 
 To fix this behavior, the `#` character must be encoded using `.encodeURIComponent()` before being added to the Data URL. It replaces each `"#"` character with `"%23"`.
