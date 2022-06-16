@@ -2,7 +2,7 @@ import("https://unpkg.com/diff@5.0.0/dist/diff.js");
 
 function consoleLogMonkey() {
   console.log = function consoleLogMonkey(...args) {
-    return parent.postMessage(JSON.stringify([location.hash.substr(1), ...args]), '*');
+    return parent.postMessage(JSON.stringify([_TestHTML_id, ...args]), '*');
   }
 }
 
@@ -55,7 +55,7 @@ class TestHTML extends HTMLElement {
 
   onMessage(e) {
     const res = JSON.parse(e.data);
-    if (!(res instanceof Array) || res.shift() !== this.#id + '')
+    if (!(res instanceof Array) || res.shift() !== this.#id)
       return;
     this.#resultObj.push(res.length === 1 ? res[0] : res);
     this.render();
@@ -105,8 +105,8 @@ class TestHTML extends HTMLElement {
     this.shadowRoot.getElementById("link").setAttribute('href', testUrl);
     const testTxt = await (await fetch(testUrl)).text();
     this.shadowRoot.getElementById("code").textContent = testTxt;
-    const txt = `<base href='${testUrl}'/><script>(${consoleLogMonkey.toString()})();</script>${testTxt}`;
-    this.shadowRoot.getElementById("iframe").src = `data:text/html;charset=utf-8,${encodeURIComponent(txt)}#${this.#id}`;
+    const txt = `<base href='${testUrl}'/><script>_TestHTML_id=${this.#id};(${consoleLogMonkey.toString()})();</script>${testTxt}`;
+    this.shadowRoot.getElementById("iframe").src = `data:text/html;charset=utf-8,${encodeURIComponent(txt)}`;
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
