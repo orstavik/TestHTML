@@ -61,26 +61,28 @@ You can add more than one test in the same test file, of course.
 
 The thing you are testing is the `console.log(..)` outputs from the `HelloWorld.html` file.
 
-## Example: run several test files as one
+## Example: test set aggregate
 
 You can run two or more test files together by making an aggregate file. You don't really need a framework for this, just do something like this:
 
 ```html
-<h1>Test hello</h1>
-<div href="Test_HelloWorld.html"></div>
-<h1>Test goodbye</h1>
-<div href="Test_GoodbyeWorld.html"></div>
+<h1><a href="/somewhere/testSetOne.html" target="_blank">test set one</a></h1>
+<iframe src="/somewhere/testSetOne.html" width="100%" onload="fitHeight(event.currentTarget)"></iframe>
 
-<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML@v1.0.3/TestHTML.js"></script>
+<h1><a href="/else/testSetTwo.html" target="_blank">test set two</a></h1>
+<iframe src="/else/testSetTwo.html" width="100%" onload="fitHeight(event.currentTarget)"></iframe>
+
 <script>
-  (async function () {
-    for (let test of document.querySelectorAll("div:not([off])")) {
-      const href = new URL(test.getAttribute('href'), location.href);
-      test.innerHTML = await (await fetch(href)).text();
-    }
-  })();
+  function fitHeight(iframe) {
+    iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
+  }
 </script>
 ```
+
+The above test set aggregate is convoluted: 
+1. The aggregate test set runner contains several test set `<iframe>`s.
+2. And inside each test set `<iframe>` there are several `<iframe>`s, one for each test.
+3. Therefore, I recommend that you add a link to each test set so that it can be opened separately in a new tab when you need to work with bugs.
 
 ## Example: make a self correcting test set
 
