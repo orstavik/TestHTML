@@ -69,11 +69,15 @@ class TestHTML extends HTMLElement {
     this.render(this.result = TestHTML.stringify(ar));
   }
 
+  static xPathQuoteEscapeBugFix(txt){
+    return "concat('','" + txt.split(/'/).join('\',"\'",\'') + "')";
+  }
+
   render(txt) {
     let state = "error", match;
-    if (match = document.evaluate(`//script[@expected][contains(text(), '${txt}')]`, this, null, XPathResult.ANY_TYPE, null).iterateNext())
+    if (match = document.evaluate(`//script[@expected][contains(text(), ${TestHTML.xPathQuoteEscapeBugFix(txt)})]`, this, null, XPathResult.ANY_TYPE, null).iterateNext())
       state = "ok";
-    else if (match = document.evaluate(`//script[@expected][starts-with(text(), '${txt.slice(0, -2)}')]`, this, null, XPathResult.ANY_TYPE, null).iterateNext())
+    else if (match = document.evaluate(`//script[@expected][starts-with(text(), ${TestHTML.xPathQuoteEscapeBugFix(txt.slice(0, -2))})]`, this, null, XPathResult.ANY_TYPE, null).iterateNext())
       state = "maybe";
     this.setAttribute("state", state);
     if(match)
