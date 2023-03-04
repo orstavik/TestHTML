@@ -12,8 +12,9 @@ function consoleLogMonkey() {
 const template = `
   <style>
     :host { display: block; height: 1em; overflow: hidden; }
-    :host([ok]) { border-left: 5px solid green; }
-    :host([not-ok]) { border-left: 5px solid red; }
+    :host([state]) { border-left: 5px solid green; }
+    :host([state=maybe]) { border-left: 5px solid orange; }
+    :host([state=error]) { border-left: 5px solid red; }
 
     #diff, #code { white-space: pre-wrap; border: 4px double lightblue; }
     .added {color: green}
@@ -24,7 +25,8 @@ const template = `
     :host([active]) iframe { height: auto; width: auto; display: block;}
     /*:host([active]) #diff, #code { display: block;}*/
   </style>
-  <b id="alt"></b><span id="title"></span><a id="link" target="_blank">(=> new tab)</a> <a id="clipboard">[copy JSON-result]</a>
+  <b id="alt"></b><span id="title"></span><a id="link" target="_blank">(=> new tab)</a> <a id="clipboard">[copy
+    JSON-result]</a>
   <iframe id="iframe"></iframe>
   <div id="diff"></div>
   <div id="code"></div>
@@ -39,44 +41,43 @@ class TestHTML extends HTMLElement {
   static #count = 0;
   #id = TestHTML.#count++;
 
-  #resultObj = [];
-  #result = document.createElement("script");
-
   constructor() {
     super();
     this.attachShadow({mode: "open"});
     this.shadowRoot.innerHTML = template;
-    this.#result.setAttribute("result", "");
+    this.insertAdjacentHTML("beforeend", "<script result>[]</script>");
     window.addEventListener('message', e => this.onMessage(e));
     this.shadowRoot.addEventListener('dblclick', e => this.onDblclick(e));
     const clipboard = this.shadowRoot.getElementById('clipboard');
-    clipboard.addEventListener('click', _ => navigator.clipboard.writeText(this.#result.textContent));
+    clipboard.addEventListener('click', _ => navigator.clipboard.writeText(this.result));
+  }
+
+  get result() {
+    return this.querySelector(":scope>script[result]").textContent;
+  }
+
+  set result(v) {
+    this.querySelector(":scope>script[result]").textContent = v;
   }
 
   onMessage(e) {
     const res = JSON.parse(e.data);
     if (!(res instanceof Array) || res.shift() !== this.#id)
       return;
-    this.#resultObj.push(res.length === 1 ? res[0] : res);
-    this.render();
+    const ar = JSON.parse(this.result);
+    ar.push(res.length === 1 ? res[0] : res);
+    this.render(this.result = TestHTML.stringify(ar));
   }
 
-  render() {
-    //clean up old result
-    this.removeAttribute("ok");
-    this.removeAttribute("not-ok");
-    this.#result.textContent = TestHTML.stringify(this.#resultObj);
-    this.#result.remove();
-    for (let expect of this.querySelectorAll(":scope > script[expected]")) {
-      if (expect.textContent === this.#result.textContent){
-        const alt = expect.getAttribute("expected");
-        this.shadowRoot.getElementById("alt").textContent = alt;
-        this.setAttribute("ok", alt);
-        return
-      }
-    }
-    this.append(this.#result);
-    this.setAttribute("not-ok", "");
+  render(txt) {
+    let state = "error", match;
+    if (match = document.evaluate(`//script[@expected][contains(text(), '${txt}')]`, this, null, XPathResult.ANY_TYPE, null).iterateNext())
+      state = "ok";
+    else if (match = document.evaluate(`//script[@expected][starts-with(text(), '${txt.slice(0, -2)}')]`, this, null, XPathResult.ANY_TYPE, null).iterateNext())
+      state = "maybe";
+    this.setAttribute("state", state);
+    if(match)
+      this.shadowRoot.getElementById("alt").textContent = match.getAttribute("expected");
   }
 
   onDblclick() {
@@ -84,14 +85,14 @@ class TestHTML extends HTMLElement {
   }
 
   onActive() {
-    if(this.hasAttribute("not-ok")){
+    if (this.hasAttribute("ok")) {
+      const ok = this.getAttribute('ok');
+      this.shadowRoot.getElementById("diff").innerHTML = this.querySelector(`script[expected="${ok}"]`).textContent;
+    } else {
       const e = this.querySelector("script[expected]").textContent;
       const r = this.querySelector("script[result]").textContent;
       this.shadowRoot.getElementById("diff").innerHTML =
         Diff.diffWords(e, r).map(p => `<span class="${p.added ? 'added' : p.removed ? 'removed' : ''}">${p.value}</span>`).join('');
-    } else if(this.hasAttribute("ok")) {
-      const ok = this.getAttribute('ok');
-      this.shadowRoot.getElementById("diff").innerHTML = this.querySelector(`script[expected="${ok}"]`).textContent;
     }
   }
 
