@@ -66,10 +66,12 @@ class TestHTML extends HTMLElement {
       return;
     const ar = JSON.parse(this.result);
     ar.push(res.length === 1 ? res[0] : res);
+    if (this.hasAttribute("sort"))
+      ar.sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b), "en-us"));
     this.render(this.result = TestHTML.stringify(ar));
   }
 
-  static xPathQuoteEscapeBugFix(txt){
+  static xPathQuoteEscapeBugFix(txt) {
     return "concat('','" + txt.split(/'/).join('\',"\'",\'') + "')";
   }
 
@@ -80,7 +82,7 @@ class TestHTML extends HTMLElement {
     else if (match = document.evaluate(`//script[@expected][starts-with(text(), ${TestHTML.xPathQuoteEscapeBugFix(txt.slice(0, -2))})]`, this, null, XPathResult.ANY_TYPE, null).iterateNext())
       state = "maybe";
     this.setAttribute("state", state);
-    if(match)
+    if (match)
       this.shadowRoot.getElementById("alt").textContent = match.getAttribute("expected");
   }
 
