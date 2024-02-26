@@ -67,67 +67,50 @@ You can add more than one test in the same test file, of course.
 
 The thing you are testing is the `console.log(..)` outputs from the `HelloWorld.html` file.
 
-## Example: test set aggregate
+## Example: test set aggregate (the best way)
 
-You can run two or more test files together by making an aggregate file. You don't really need a framework for this, just do something like this:
+As each test component is running inside an `<iframe>`, if we use `<iframe>`s to place many test sets side by side, we will get nested `<iframe>`s. That can be a problem. Therefore, to run many smaller test sets as one big test, we instead cut and paste the code of each sub-test set into the aggregate test set in the browser. This is not conceptually pretty, but it works ok running actual aggregate tests.
 
-```html
-<h1><a href="/somewhere/testSetOne.html" target="_blank">test set one</a></h1>
-<iframe src="/somewhere/testSetOne.html" width="100%" onload="fitHeight(event.currentTarget)"></iframe>
-
-<h1><a href="/else/testSetTwo.html" target="_blank">test set two</a></h1>
-<iframe src="/else/testSetTwo.html" width="100%" onload="fitHeight(event.currentTarget)"></iframe>
-
-<script>
-  function fitHeight(iframe) {
-    iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
-  }
-</script>
-```
-
-The above test set aggregate is convoluted: 
-1. The aggregate test set runner contains several test set `<iframe>`s.
-2. And inside each test set `<iframe>` there are several `<iframe>`s, one for each test.
-3. Therefore, I recommend that you add a link to each test set so that it can be opened separately in a new tab when you need to work with bugs.
-
-## Example: make a self correcting test set
-
-Sometimes you do changes that you alter the print of several tests. You therefore want to copy paste the new result into your test. To do so, add the following script at the end of your test.html file.
+[Test_many.html](demo/Test_many.html)
 
 ```html
-<test-html test="HelloWorld.html">
-  <script expected>
-    [
-      "Hello WORLD",
-      [1, 2, 3]
-    ]
-  </script>
-</test-html>
+<h1>Test hello</h1>
+<div href="Test_HelloWorld.html"></div>
+<h1>Test goodbye</h1>
+<div href="Test_GoodbyeWorld.html"></div>
+<h1>Test hello2</h1>
+<div href="Test_HelloWorld2.html"></div>
+<h1>Test splice</h1>
+<div href="Test_HelloSplice.html"></div>
 
-<test-html test="GoodbyeWorld.html">
-  <script expected>
-    ["wait for it"]
-  </script>
-</test-html>
-
-<!-- Note!! You must load the test-html component at the end -->
-<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML@v1.0.3/TestHTML.js"></script>
 <script>
-  setTimeout(function () {
-    for (let el of document.querySelectorAll('test-html')) {
-      el.removeAttribute("ok");
-      el.removeAttribute("not-ok");
+  (async function () {
+    for (let test of document.querySelectorAll("div:not([off])")) {
+      const href = new URL(test.getAttribute('href'), location.href);
+      test.innerHTML = await (await fetch(href)).text();
     }
-    console.log(document.body.innerHTML);
-  }, 1500);
+  })();
 </script>
+<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML@v1.0.3/TestHTML.js"></script>
 ```
 
-> Att!! If the focus is not on the window, then this function will fail. That is useful, so to void this function, set focus inside devtools and rerun the page.
->
-> Simply copy paste the printed result to and from your test.html file.
+## FAQ
 
-## Example:  `#` character in the Data URL
+#### 1. `Failed to load resource: the server responded with a status of 404 (Not Found)`
+
+The problem here is likely to do with the server not reacting kindly to js files (or other resources) being loaded from within the iframe. 
+To make the test work in isolate, we use an `<iframe src="data:..">`. This means that it is a nice clean room for the test to run, but 
+also that local development servers on the localhost doesn't know what to do.
+
+If the problem is `localhost`, then the solution is:
+
+```bash
+npx http-server -p 6666 --cors
+```
+
+If the problem is an external script, then you should consider whether or not the script really needs to be cors protected. Maybe it is already freely available and cors readable via `jsdelivr.net` or `unpkg.com`? Or maybe you can only run tests against these scripts if you have them in a local development environment.
+
+#### 2. `#` character in the Data URL
 
 We often use the `#` characters inside our files. This can be as an id selector for CSS, HTML code for Unicode characters, or part of a link for `<a>` element.
 
@@ -167,18 +150,3 @@ Using `<iframe>` and _Data URLs_ as sources can cause problems when interpreting
 ```
 
 To fix this behavior, the `#` character must be encoded using `.encodeURIComponent()` before being added to the Data URL. It replaces each `"#"` character with `"%23"`.
-
-## FAQ
-
-1. `Failed to load resource: the server responded with a status of 404 (Not Found)`
-
-The problem here is likely to do with the server not reacting kindly to js files (or other resources) being loaded from within the iframe. 
-To make the test work in isolate, we use an `<iframe src="data:..">`. This means that it is a nice clean room for the test to run, but 
-also that local development servers on the localhost doesn't know what to do.
-
-If the problem is `localhost`, then the solution is:
-```
-npx http-server -p 6666 --cors
-```
-
-If the problem is an external script, then you should consider whether or not the script really needs to be cors protected. Maybe it is already freely available and cors readable via `jsdelivr.net` or `unpkg.com`? Or maybe you can only run tests against these scripts if you have them in a local development environment.
