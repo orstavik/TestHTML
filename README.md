@@ -2,6 +2,12 @@
 
 [`TestHTML`](https://orstavik.github.io/TestHTML) is a web component unit test framework.
 
+To run the tests, you simply need to create a new `.html` file that contains one or more `<test-html>` elements and a script referencing `TestHTML.js`. When you open that `.html` file in a browser, the browser will run the test and show you the result in a webpage.
+
+The tests work by adding a series of `<test-html>` custom elements. Each custom elements will get the html code from the file referenced in the `test` attribute. The elements then load the raw html text as the content of an internal `<iframe>` that will then run the html template.
+
+When the html test text is run, the `<test-html>` element will listen for all `console.log` messages inside the iframe. It will then compare that content with the content of the `<script expected>` inside (the lightDom) of the `<test-html>` element. If the two match, then then test will be marked green as successful, if not, the `<test-html>` element will be marked red as faulty.
+
 ## Example: Hello world
 
 [HelloWorld.html](demo/HelloWorld.html)
