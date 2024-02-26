@@ -2,11 +2,28 @@
 
 [`TestHTML`](https://orstavik.github.io/TestHTML) is a web component unit test framework.
 
-To run the tests, you simply need to create a new `.html` file that contains one or more `<test-html>` elements and a script referencing `TestHTML.js`. When you open that `.html` file in a browser, the browser will run the test and show you the result in a webpage.
+To run the tests, you simply need to create a new `test.html` file that contains one or more `<test-html>` elements. Each `<test-html>` element will represent _one_ test. When you open your `test.html` file in a browser, the browser will run that test and show you the result as a webpage.
 
-The tests work by adding a series of `<test-html>` custom elements. Each custom elements will get the html code from the file referenced in the `test` attribute. The elements then load the raw html text as the content of an internal `<iframe>` that will then run the html template.
+Each `<test-html>` element works by getting another `to_be_tested.html` file. This is the `.html` code (with the potentially problematic js code) that you want to test. 
 
-When the html test text is run, the `<test-html>` element will listen for all `console.log` messages inside the iframe. It will then compare that content with the content of the `<script expected>` inside (the lightDom) of the `<test-html>` element. If the two match, then then test will be marked green as successful, if not, the `<test-html>` element will be marked red as faulty.
+```html
+<test-html test=`to_be_tested.html`>
+```
+
+Each `<test-html>` element works by 1. fetching the raw html text as the content from the link and then 2. running that html+js code inside a separate, internal `<iframe>`.
+ 
+When the `to_be_tester.html` file runs, the parent `<test-html>` element will listen and extract all __`console.log`__ outputs given by the `to_be_tested.html` file, from inside the `<iframe>`. The `<test-html>` element will then compare that output with the content of a `<script expected>` child  element. The sequence of the `console.log` messages is preserved (within each test). If the output of the `console.log`s matches the content of the `<script expected>`, then the test is marked green. If mismatch, the test is marked red. While the test is still running, and the `console.log` are partially matching, the test is marked yellow.
+
+```html
+<test-html test=`to_be_tested.html`>
+  <script expected>
+    [
+      "message 1 from console.log",
+      "message 2 from console.log"
+    ]
+  </script>
+</test-html>
+```
 
 ## Example: Hello world
 
