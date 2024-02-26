@@ -1,6 +1,6 @@
 # TestHTML
 
-`TestHTML` is a web component unit test framework.
+[`TestHTML`](https://orstavik.github.io/TestHTML) is a web component unit test framework.
 
 ## Example: Hello world
 
