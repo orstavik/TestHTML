@@ -150,3 +150,7 @@ Using `<iframe>` and _Data URLs_ as sources can cause problems when interpreting
 ```
 
 To fix this behavior, the `#` character must be encoded using `.encodeURIComponent()` before being added to the Data URL. It replaces each `"#"` character with `"%23"`.
+
+## More information?
+
+[OLD_IDEAS](OLD_IDEAS)
