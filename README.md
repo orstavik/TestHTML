@@ -2,7 +2,14 @@
 
 [`TestHTML`](https://orstavik.github.io/TestHTML) is a web component unit test framework.
 
-To run the tests, you simply need to create a new `test.html` file that contains one or more `<test-html>` elements. Each `<test-html>` element will represent _one_ test. When you open your `test.html` file in a browser, the browser will run that test and show you the result as a webpage.
+To run the tests, you simply need to create a new `test.html` file that contains one or more `<test-html>` elements. Each `<test-html>` element will represent _one_ test. You then 1. start a local web server in the directory that contains the `test.html` file and 2. open that `test.html` file in a browser. The browser will run that test and show you the result as a webpage.
+
+```bash
+cd test                            #test/test.html
+# liveserver in VS_CODE also works, so you can skip the below npx server if you would like.
+npx http-server -p 6666 --cors      #some tests require --cors, so you likely want to add that 
+# open //localhost:6666/test.html in your browser
+```
 
 Each `<test-html>` element works by getting another `to_be_tested.html` file. This is the `.html` code (with the potentially problematic js code) that you want to test. 
 
@@ -115,9 +122,9 @@ As each test component is running inside an `<iframe>`, if we use `<iframe>`s to
 
 #### 1. `Failed to load resource: the server responded with a status of 404 (Not Found)`
 
-The problem here is likely to do with the server not reacting kindly to js files (or other resources) being loaded from within the iframe. 
-To make the test work in isolate, we use an `<iframe src="data:..">`. This means that it is a nice clean room for the test to run, but 
-also that local development servers on the localhost doesn't know what to do.
+The problem here is likely to do with the server not reacting kindly to js files (or other resources) being loaded from within the iframe.
+
+To make the test work in isolate, we use an `<iframe src="data:..">`. This means that it is a nice clean room for the test to run, but also that local development servers on the localhost doesn't know what to do.
 
 If the problem is `localhost`, then the solution is:
 
