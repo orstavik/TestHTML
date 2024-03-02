@@ -134,7 +134,11 @@ npx http-server -p 6666 --cors
 
 If the problem is an external script, then you should consider whether or not the script really needs to be cors protected. Maybe it is already freely available and cors readable via `jsdelivr.net` or `unpkg.com`? Or maybe you can only run tests against these scripts if you have them in a local development environment.
 
-#### 2. `#` character in the Data URL
+#### 2. `TypeError: ... navigator.clipboard.write()`
+
+If you get a `TypeError` referencing the call to `navigator.clipboard.write()`, this error is caused by security protections for `http://` sites. Setup a local `https://` server instead. Or run the tests from your remote library.
+
+#### 3. `#` character in the Data URL
 
 We often use the `#` characters inside our files. This can be as an id selector for CSS, HTML code for Unicode characters, or part of a link for `<a>` element.
 

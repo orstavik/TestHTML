@@ -49,7 +49,7 @@ class TestHTML extends HTMLElement {
     window.addEventListener('message', e => this.onMessage(e));
     this.shadowRoot.addEventListener('dblclick', e => this.onDblclick(e));
     const clipboard = this.shadowRoot.getElementById('clipboard');
-    clipboard.addEventListener('click', async _ => await navigator.clipboard.writeText(this.result));
+    clipboard.addEventListener('click', _ => navigator.clipboard.writeText(this.result));
   }
 
   get result() {
