@@ -1,4 +1,4 @@
-import("https://unpkg.com/diff@5.0.0/dist/diff.js");
+import("https://unpkg.com/diff@5.2.0/dist/diff.js");
 
 function consoleLogMonkey() {
   console.log = function consoleLogMonkey(...args) {
