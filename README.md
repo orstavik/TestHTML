@@ -5,10 +5,10 @@
 To run the tests, you simply need to create a new `test.html` file that contains one or more `<test-html>` elements. Each `<test-html>` element will represent _one_ test. You then 1. start a local web server in the directory that contains the `test.html` file and 2. open that `test.html` file in a browser. The browser will run that test and show you the result as a webpage.
 
 ```bash
-cd test                            #test/test.html
-# liveserver in VS_CODE also works, so you can skip the below npx server if you would like.
-npx http-server -p 6666 --cors      #some tests require --cors, so you likely want to add that 
+cd test                          #test/test.html
+npx http-server -p 6666 --cors   #some tests require --cors 
 # open //localhost:6666/test.html in your browser
+# liveserver in VS_CODE also works
 ```
 
 Each `<test-html>` element works by getting another `to_be_tested.html` file. This is the `.html` code (with the potentially problematic js code) that you want to test. 
