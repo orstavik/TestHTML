@@ -21,7 +21,7 @@ const template = /*html*/`
     :host([state="ok"]) { border-left-color: green; }
     :host([state="error"]) { border-left-color: red; }
 
-    #diff, #code { white-space: pre-wrap; border: 4px double lightblue; }
+    #diff { white-space: pre-wrap; border-left: 4px solid lightblue; }
     .added {color: green}
     .removed {color: red}
     iframe { height: 10px; width: 10px; display: inline-block; }
@@ -33,16 +33,15 @@ const template = /*html*/`
   <span id="title"></span>
   <a id="link" target="_blank">(=> new tab)</a> <a id="clipboard">[copy JSON-result]</a>
   <iframe id="iframe"></iframe>
-  <pre id="expected"></pre>
-  <pre id="result"></pre>
+  <hr />
   <div id="diff"></div>
+  <hr /><hr />
+  <pre id="result"></pre>
+  <hr />
+  <pre id="expected"></pre>
 `;
 
 class TestHTML extends HTMLElement {
-
-  static stringify(ar) {
-    return `[\n${ar.map(row => `      ${JSON.stringify(row)}`).join(',\n')}\n]`;
-  }
 
   static #count = 0;
   #id = TestHTML.#count++;
@@ -69,41 +68,35 @@ class TestHTML extends HTMLElement {
 
   onMessage(e) {
     const res = JSON.parse(e.data);
-    if ((res instanceof Array) && res.shift() === this.#id)
-      this.setAttribute("state",
-        this.expected.textContent.trim() == (this.result.textContent = res[0].trim()) ? "ok" : "error");
+    if (!(res instanceof Array && res.shift() === this.#id))
+      return;
+    this.result.textContent = res[0];
+    this.diffs = Diff.diffWords(this.expected.textContent, this.result.textContent);
+    const m = this.diffs.some(p => ((p.added || p.removed) && p.value.trim()));
+    this.setAttribute("state", m ? "error" : "ok");
   }
 
   onActive() {
-    const diffs = Diff.diffWords(this.expected.textContent, this.result.textContent);
-    this.shadowRoot.getElementById("diff").innerHTML = diffs
+    this.diff.innerHTML = this.diffs
       .map(p => `<span class="${p.added ? 'added' : p.removed ? 'removed' : ''}">${p.value}</span>`)
       .join('');
   }
 
   onTest() {
-    //clean up the text in <script expected>s.
-    this.expected.textContent = this.querySelector("[expected]").textContent;
-    this.title.textContent = this.querySelector("h1,h2,h3,h4,h5,h6").textContent;
-
+    this.expected.textContent = this.querySelector("[expected]").textContent.trim();
+    this.title.textContent = this.getAttribute("title") || this.textContent.substring(0, 50).trim();
     const testTxt = this.innerHTML.replaceAll(`type="test"`, `type="module"`);
-    const txt = `
-    <base href='${document.location}'/>
-    ${testTxt}
-    <script>_TestHTML_id=${this.#id};(${expectedTester.toString()})();</script>
-    `;
+    const txt = `<base href='${document.location}'/>\n${testTxt}
+    <script>_TestHTML_id=${this.#id};(${expectedTester.toString()})();</script>`;
     this.iframe.src = `data:text/html;charset=utf-8,${encodeURIComponent(txt)}`;
     this.link.setAttribute('href', URL.createObjectURL(new Blob([txt], { type: 'text/html' })));
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    if (name === 'active' && newValue != null)
-      this.onActive();
+    name === 'active' && newValue != null && this.onActive();
   }
 
-  static get observedAttributes() {
-    return ['active'];
-  }
+  static get observedAttributes() { return ['active']; }
 }
 
 try {
