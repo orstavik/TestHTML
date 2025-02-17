@@ -87,7 +87,7 @@ class TestHTML extends HTMLElement {
   }
 
   onDblclick() {
-    this.hasAttribute('active') ? this.removeAttribute('active') : this.setAttribute('active', '');
+    this.toggleAttribute('active');
   }
 
   onActive() {
