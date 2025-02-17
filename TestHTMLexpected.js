@@ -69,10 +69,9 @@ class TestHTML extends HTMLElement {
 
   onMessage(e) {
     const res = JSON.parse(e.data);
-    if ((res instanceof Array) && res.shift() === this.#id){
-      const state = this.result.textData = res[0];
-      this.setAttribute("state", this.expected.textContent.trim() == state.trim() ? "ok" : "error");
-    }
+    if ((res instanceof Array) && res.shift() === this.#id)
+      this.setAttribute("state",
+        this.expected.textContent.trim() == (this.result.textContent = res[0].trim()) ? "ok" : "error");
   }
 
   onActive() {
@@ -98,7 +97,7 @@ class TestHTML extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    if (name === 'active' && newValue)
+    if (name === 'active' && newValue != null)
       this.onActive();
   }
 

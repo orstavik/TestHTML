@@ -118,6 +118,29 @@ As each test component is running inside an `<iframe>`, if we use `<iframe>`s to
 <script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML@v1.1.3/TestHTML.js"></script>
 ```
 
+# TestHTMLexpected
+
+Script that can be used to test directly within the html text. Simplifies the handling of base and references to other modules. The test will observe the first element with the `[expected]` attribute, and when this element changes, the test will see if the content of this element has changed or not.
+
+```html
+<test-html test="HelloWorld.html">
+  <h1>Hello WORLD</h1>
+  <pre expected>
+    hello sunshine Hello Sunshine!
+  </pre>
+  <script type="test">
+    import { helloSunshine } from "./HelloSunshine.js";
+    const pre = document.querySelector("pre");
+    pre.innerText = "hello sunshine " + helloSunshine();
+  </script>
+</test-html>
+
+
+<!-- Note!! You must load the test-html component at the end -->
+<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML@v1.2.0/TestHTML.js"></script>
+<!-- <script src="../TestHTML3.js"></script> -->
+```
+
 ## FAQ
 
 #### 1. `Failed to load resource: the server responded with a status of 404 (Not Found)`
