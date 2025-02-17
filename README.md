@@ -5,10 +5,10 @@
 To run the tests, you simply need to create a new `test.html` file that contains one or more `<test-html>` elements. Each `<test-html>` element will represent _one_ test. You then 1. start a local web server in the directory that contains the `test.html` file and 2. open that `test.html` file in a browser. The browser will run that test and show you the result as a webpage.
 
 ```bash
-cd test                            #test/test.html
-# liveserver in VS_CODE also works, so you can skip the below npx server if you would like.
-npx http-server -p 6666 --cors      #some tests require --cors, so you likely want to add that 
+cd test                          #test/test.html
+npx http-server -p 6666 --cors   #some tests require --cors 
 # open //localhost:6666/test.html in your browser
+# liveserver in VS_CODE also works
 ```
 
 Each `<test-html>` element works by getting another `to_be_tested.html` file. This is the `.html` code (with the potentially problematic js code) that you want to test. 
@@ -58,7 +58,7 @@ When the `to_be_tester.html` file runs, the parent `<test-html>` element will li
 </test-html>
 
 <!-- Note!! You must load the test-html component at the end -->
-<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML@v1.0.3/TestHTML.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML@v1.1.3/TestHTML.js"></script>
 ```
 
 The thing you are testing is the `console.log(..)` outputs from the `HelloWorld.html` file.
@@ -86,7 +86,7 @@ You can add more than one test in the same test file, of course.
 </test-html>
 
 <!-- Note!! You must load the test-html component at the end -->
-<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML@v1.0.3/TestHTML.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML@v1.1.3/TestHTML.js"></script>
 ```
 
 The thing you are testing is the `console.log(..)` outputs from the `HelloWorld.html` file.
@@ -115,7 +115,7 @@ As each test component is running inside an `<iframe>`, if we use `<iframe>`s to
     }
   })();
 </script>
-<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML@v1.0.3/TestHTML.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML@v1.1.3/TestHTML.js"></script>
 ```
 
 ## FAQ
@@ -174,7 +174,7 @@ Using `<iframe>` and _Data URLs_ as sources can cause problems when interpreting
 </test-html>
 
 <!-- Note!! You must load the test-html component at the end -->
-<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML@v1.0.3/TestHTML.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/orstavik/TestHTML@v1.1.3/TestHTML.js"></script>
 ```
 
 To fix this behavior, the `#` character must be encoded using `.encodeURIComponent()` before being added to the Data URL. It replaces each `"#"` character with `"%23"`.
