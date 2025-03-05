@@ -1,4 +1,4 @@
-import("https://unpkg.com/diff@5.2.0/dist/diff.js");
+import { myersDiff } from 'https://cdn.jsdelivr.net/gh/orstavik/mymy@first_draft/src/myerLifting2.js';
 
 function expectedTester() {
   const mo = new MutationObserver(([{ target }]) =>
@@ -22,8 +22,8 @@ const template = /*html*/`
     :host([state="error"]) { border-left-color: red; }
 
     #diff { white-space: pre-wrap; border-left: 4px solid lightblue; }
-    .added {color: green}
-    .removed {color: red}
+    .added {color: green; text-decoration: underline;}
+    .removed {color: red; text-decoration: underline;}
     iframe { height: 10px; width: 10px; display: inline-block; }
 
     :host([active]) { height: 60vh; overflow: scroll; }
@@ -71,15 +71,14 @@ class TestHTML extends HTMLElement {
     if (!(res instanceof Array && res.shift() === this.#id))
       return;
     this.result.textContent = res[0];
-    this.diffs = Diff.diffWords(this.expected.textContent, this.result.textContent);
-    const m = this.diffs.some(p => ((p.added || p.removed) && p.value.trim()));
+    this.diffs = myersDiff(this.expected.textContent, this.result.textContent)
+      .map(([, , type, , value]) => ({ type: type === "-" ? "removed" : type === "+" ? "added" : "", value }));
+    const m = this.diffs.some(({ type, value }) => (type && value.trim()));
     this.setAttribute("state", m ? "error" : "ok");
   }
 
   onActive() {
-    this.diff.innerHTML = this.diffs
-      .map(p => `<span class="${p.added ? 'added' : p.removed ? 'removed' : ''}">${p.value}</span>`)
-      .join('');
+    this.diff.innerHTML = this.diffs.map(p => `<span class="${p.type}">${p.value}</span>`).join('');
   }
 
   onTest() {
