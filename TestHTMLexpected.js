@@ -78,7 +78,7 @@ class TestHTML extends HTMLElement {
   }
 
   onActive() {
-    this.diff.innerHTML = this.diffs.map(p => `<span class="${p.type}">${p.value}</span>`).join('');
+    this.diff.innerHTML = this.diffs?.map(p => `<span class="${p.type}">${p.value}</span>`).join('');
   }
 
   onTest() {
