@@ -1,4 +1,4 @@
-import { myersDiff } from 'https://cdn.jsdelivr.net/gh/orstavik/mymy@first_draft/src/myerLifting2.js';
+import { myersDiff } from 'https://cdn.jsdelivr.net/gh/orstavik/mymy@v1/src/myerLifting2.js';
 
 function expectedTester() {
   const mo = new MutationObserver(([{ target }]) =>
