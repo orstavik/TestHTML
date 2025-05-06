@@ -72,7 +72,7 @@ class TestHTML extends HTMLElement {
       return;
     this.result.textContent = res[0];
     this.diffs = myersDiff(this.expected.textContent, this.result.textContent)
-      .map(([, , type, , value]) => ({ type: type === "-" ? "removed" : type === "+" ? "added" : "", value }));
+      .map(([, , type, , value]) => ({ type: type === "-" ? "added" : type === "+" ? "removed" : "", value }));
     const m = this.diffs.some(({ type, value }) => (type && value.trim()));
     this.setAttribute("state", m ? "error" : "ok");
   }
