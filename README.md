@@ -1,6 +1,6 @@
 # TestHTML
 
-[`TestHTML`](https://orstavik.github.io/TestHTML) is a web component unit test framework.
+[`TestHTML`](https://orstavik.github.io/TestHTML) is a web component unit test framework [`(github)`](https://github.com/orstavik/TestHTML).
 
 To run the tests, you simply need to create a new `test.html` file that contains one or more `<test-html>` elements. Each `<test-html>` element will represent _one_ test. You then 1. start a local web server in the directory that contains the `test.html` file and 2. open that `test.html` file in a browser. The browser will run that test and show you the result as a webpage.
 
