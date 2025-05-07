@@ -5,11 +5,10 @@
 To run the tests, you simply need to create a new `test.html` file that contains one or more `<test-html>` elements. Each `<test-html>` element will represent _one_ test. You then 1. start a local web server in the directory that contains the `test.html` file and 2. open that `test.html` file in a browser. The browser will run that test and show you the result as a webpage.
 
 ```bash
-cd test                          #test/test.html
-npx http-server -p 6666 --cors   #some tests require --cors 
-# open //localhost:6666/test.html in your browser
-# liveserver in VS_CODE also works
+npx http-server -p 6666 --cors
 ```
+
+(liveserver in VS_CODE also works).
 
 Each `<test-html>` element works by getting another `to_be_tested.html` file. This is the `.html` code (with the potentially problematic js code) that you want to test. 
 
@@ -201,6 +200,71 @@ Using `<iframe>` and _Data URLs_ as sources can cause problems when interpreting
 ```
 
 To fix this behavior, the `#` character must be encoded using `.encodeURIComponent()` before being added to the Data URL. It replaces each `"#"` character with `"%23"`.
+
+## End-2-end: `TestE2E.js`
+
+`TestE2E.js` extends the testing capabilities of TestHTML with end-to-end (E2E) testing functionality. While the regular `<test-html>` component focuses on capturing console outputs, `<test-e2e>` enables testing actual user interactions and DOM state changes.
+
+### Basic Usage
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<script type="module" src="/TestE2E.js"></script>
+
+<body>
+  <test-e2e name="myTest" page="PageToTest.html" auto>
+    <script type="module" test>
+      export default async function (frame) {
+        // Perform interactions and return test result
+        let result = await frame.click("#button", "#target");
+        return result.getAttribute("data-state");
+      }
+    </script>
+    <script expected>"completed"</script>
+  </test-e2e>
+</body>
+</html>
+```
+
+### WindowWrapper API
+
+The `frame` parameter in your test function provides these utility methods:
+
+- `document()` - Access the document object
+- `navigate(selector)` - Click an element and wait for page load
+- `click(selector, target)` - Click element and observe changes in a target
+- `goto(path)` - Navigate to a URL
+- `waitForEvent(type)` - Wait for a specific event
+- `observeChange(selector)` - Watch for DOM mutations
+- `ready(ms)` - Wait for document to fully load
+
+### Example
+
+The file `e2e/Test_HelloSunshine.html` demonstrates how to test if clicking a summary element opens a details element:
+
+```html
+<test-e2e name="helloSunshine" page="HelloSunshine.html" auto>
+  <script type="module" test>
+    export default async function (frame) {
+      let result = await frame.click("#abracadabra", "#sesame");
+      return result.hasAttribute("open");
+    }
+  </script>
+  <script expected>true</script>
+</test-e2e>
+```
+
+This tests `HelloSunshine.html`, which contains:
+
+```html
+<details id="sesame">
+  <summary id="abracadabra">Hello</summary>
+  <p>Sunshine</p>
+</details>
+```
+
+When run, the test clicks on the summary element and verifies that the details element has received the "open" attribute.
 
 ## More information?
 

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<script type="module" src="/TestE2E.js"></script>
+
+<body>
+  <test-e2e name="helloSunshine" page="HelloSunshine.html" auto>
+    <script type="module" test>
+      export default async function (frame) {
+        let result = await frame.click("#abracadabra", "#sesame");
+        return result.hasAttribute("open");
+      }
+    </script>
+    <script expected>true</script>
+  </test-e2e>
+</body>
+
+</html>
