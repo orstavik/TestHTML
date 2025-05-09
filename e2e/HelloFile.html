@@ -1,0 +1,7 @@
+<input type="file" id="fileInput" />
+<img>
+<script>
+  document.querySelector('#fileInput').addEventListener('change', function () {
+    document.querySelector('img').src = URL.createObjectURL(this.files[0]);
+  });
+</script>

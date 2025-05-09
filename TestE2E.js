@@ -9,14 +9,17 @@ class WindowWrapper {
     return this.window.document;
   }
 
-  async navigate(selector) {
-    this.window.document.querySelector(selector).click();
+  async navigate(el) {
+    el = typeof el === "string" ? this.window.document.querySelector(el) : el;
+    this.window.document.querySelector(el).click();
     await this.ready();
   }
 
-  async click(selector, target) {
-    const p = this.observeChange(target);
-    queueMicrotask(_ => this.window.document.querySelector(selector).click());
+  async click(el, observeElement) {
+    el = typeof el === "string" ? this.window.document.querySelector(el) : el;
+    observeElement = typeof observeElement === "string" ? this.window.document.querySelector(observeElement) : observeElement;
+    const p = this.observeChange(observeElement);
+    queueMicrotask(_ => el.click());
     return p;
   }
 
@@ -25,12 +28,17 @@ class WindowWrapper {
     await this.ready();
   }
 
-  waitForEvent(type) {
-    return new Promise(r => this.window.addEventListener(type, r, { once: true, capture: true }));
+  async transferFile(inputEl, file) {
+    inputEl = typeof inputEl === "string" ? this.window.document.querySelector(inputEl) : inputEl;
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+    inputEl.files = dataTransfer.files;
+    inputEl.dispatchEvent(new Event("change", { bubbles: true }));
+    await new Promise(r => setTimeout(r, 0));
   }
 
-  async observeChange(selector) {
-    const target = this.window.document.querySelector(selector);
+  async observeChange(el) {
+    el = typeof el === "string" ? this.window.document.querySelector(el) : el;
     let r;
     const p = new Promise(resolve => r = resolve);
     const mo = new MutationObserver(_ => { r(); mo.disconnect(); });
@@ -114,12 +122,13 @@ export class TestHTMLe2e extends HTMLElement {
       await win.ready();
       result = await run(win);
     } catch (e) {
+      console.error(e);
       result = e;
     }
     try { result = JSON.stringify(result, null, 2); } catch (e) { result = e.toString(); }
     this.shadowRoot.querySelector("#result").textContent = result;
     this.diffTest();
-    if (this.getAttribute("state").startsWith("ok") || this.hasAttribute("always-close"))
+    if (!this.hasAttribute("open") && this.getAttribute("state").startsWith("ok"))
       win?.window?.close();
   }
 

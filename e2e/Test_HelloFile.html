@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<script type="module" src="/TestE2E.js"></script>
+
+<body>
+  <test-e2e name="helloFile" page="HelloFile.html">
+    <script type="module" test>
+
+      async function generateSimpleSVG(color = Math.floor(Math.random() * 0xFFFFFF).toString(16).padStart(6, '0')) {
+        const svg = `<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="50" fill="#${color}" /></svg>`;
+        const dataLink = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg).replace(/'/g, '%27').replace(/"/g, '%22')}`
+        const blob = await (await fetch(dataLink)).blob();
+        return new File([blob], "tempFile.png", { type: blob.type || "image/png" });
+      }
+
+      export default async function (frame) {
+        const fileInput = frame.document().querySelector('#fileInput');
+        const circleFile = await generateSimpleSVG();
+        await frame.transferFile(fileInput, circleFile);
+        return frame.document().querySelector('img').src ? "file" : "no file";
+      }
+    </script>
+    <script expected>"file"</script>
+  </test-e2e>
+</body>
+
+</html>
