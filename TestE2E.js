@@ -42,13 +42,13 @@ class WindowWrapper {
     let r;
     const p = new Promise(resolve => r = resolve);
     const mo = new MutationObserver(_ => { r(); mo.disconnect(); });
-    mo.observe(target, {
+    mo.observe(el, {
       attributes: true,
       childList: true,
       subtree: true
     });
     await p;
-    return target;
+    return el;
   }
 
   async ready(ms = 100) {
