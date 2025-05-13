@@ -28,6 +28,12 @@ class WindowWrapper {
     await this.ready();
   }
 
+  async openExternal(url) {
+    const otherWindow = window.open(url, "_blank");
+    for (let i = 0; i < 10 && !otherWindow.closed; i++)
+      await new Promise(r => setTimeout(r, i + 1000));
+  }
+
   async transferFile(inputEl, file) {
     inputEl = typeof inputEl === "string" ? this.window.document.querySelector(inputEl) : inputEl;
     const dataTransfer = new DataTransfer();
@@ -101,14 +107,6 @@ export class TestHTMLe2e extends HTMLElement {
     return ["name", "auto"];
   }
 
-  static #moduleCache = {};
-  static async importSrcOrText(script) {
-    return script.src ?
-      this.#moduleCache[script.src] ??= await import(script.src) :
-      this.#moduleCache[script.textContent] ??=
-      await import(URL.createObjectURL(new Blob([script.textContent], { type: "text/javascript" })));
-  }
-
   async runTest() {
     const scriptEl = this.querySelector("script[test]");
     if (!scriptEl)
@@ -116,7 +114,9 @@ export class TestHTMLe2e extends HTMLElement {
     this.setAttribute("state", "running");
     let result, win;
     try {
-      const run = (await TestHTMLe2e.importSrcOrText(scriptEl)).default;
+      const TestName = /window\s*\.\s*([a-zA-Z$][a-zA-Z$0-9]+)\s*=/;//do i need to ignore \n?
+      const name = scriptEl.textContent.match(TestName)[1];
+      const run = window[name];
       const page = this.getAttribute("page") ?? "/";
       win = new WindowWrapper(window.open(page, '_blank'))
       await win.ready();

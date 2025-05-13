@@ -235,6 +235,7 @@ The `frame` parameter in your test function provides these utility methods:
 - `navigate(selector)` - Click an element and wait for page load
 - `click(selector, target)` - Click element and observe changes in a target
 - `goto(path)` - Navigate to a URL
+- `openExternal(url)` - open a different window and wait until the user closes it
 - `waitForEvent(type)` - Wait for a specific event
 - `observeChange(selector)` - Watch for DOM mutations
 - `ready(ms)` - Wait for document to fully load
@@ -245,8 +246,8 @@ The file `e2e/Test_HelloSunshine.html` demonstrates how to test if clicking a su
 
 ```html
 <test-e2e name="helloSunshine" page="HelloSunshine.html" auto>
-  <script type="module" test>
-    export default async function (frame) {
+  <script test>
+    window.testSunshine = async function (frame) {
       let result = await frame.click("#abracadabra", "#sesame");
       return result.hasAttribute("open");
     }

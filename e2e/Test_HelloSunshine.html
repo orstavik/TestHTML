@@ -4,8 +4,8 @@
 
 <body>
   <test-e2e name="helloSunshine" page="HelloSunshine.html" auto>
-    <script type="module" test>
-      export default async function (frame) {
+    <script test>
+      window.testSunshine = async function (frame) {
         let result = await frame.click("#abracadabra", "#sesame");
         return result.hasAttribute("open");
       }
