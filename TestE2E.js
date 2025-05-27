@@ -57,10 +57,16 @@ class WindowWrapper {
     return el;
   }
 
-  async ready(ms = 100) {
+  async ready(ms = 100, i = 100) {
     await new Promise(r => setTimeout(r, ms));
-    while (this.window.document.readyState !== 'complete')
+    for (; i ; i--) {
+      try {
+        if (this.window.document.readyState === 'complete') return;
+      } catch (err) { 
+        console.error('Error accessing document.readyState:', err); 
+      }
       await new Promise(r => setTimeout(r, ms));
+    }
   }
 }
 
