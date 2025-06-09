@@ -84,9 +84,7 @@ const template = /*html*/`
 </style>
 <slot></slot>
 <button>testName</button>
-<div id="diff"></div>
-<pre id="result"></pre>
-<pre id="expected"></pre>`;
+<div id="diff"></div>`;
 
 export class TestHTMLe2e extends HTMLElement {
   constructor() {
@@ -94,17 +92,8 @@ export class TestHTMLe2e extends HTMLElement {
     this.attachShadow({ mode: "open" });
     this.shadowRoot.innerHTML = template;
     this.button = this.shadowRoot.querySelector("button");
-    this.result = this.shadowRoot.querySelector("#result");
-    this.expected = this.shadowRoot.querySelector("#expected");
     this.diff = this.shadowRoot.querySelector("#diff");
     this.button.addEventListener("click", this.runTest.bind(this));
-    let expected = this.querySelector("[expected]");
-    expected = expected?.content?.textContent ?? expected?.textContent ?? "";
-    try {
-      this.expected.textContent = JSON.stringify(JSON.parse(expected), null, 2);
-    } catch (e) {
-      this.expected.textContent = expected;
-    }
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -136,30 +125,28 @@ export class TestHTMLe2e extends HTMLElement {
       console.error(e);
       result = e;
     }
-    try {
-      if (typeof result != "string")
-        result = JSON.stringify(result, null, 2);
-    } catch (e) {
-      result = e.toString();
+    const expectedEl = this.querySelector("[expected]");
+    let expected = expectedEl instanceof HTMLTemplateElement ? expectedEl.innerHTML : expectedEl.textContent;
+    if (typeof result === "object") {
+      result = JSON.stringify(result, null, 2);
+      expected = JSON.stringify(JSON.parse(expected), null, 2);
     }
-    this.shadowRoot.querySelector("#result").textContent = result;
-    this.diffTest();
+    this.diffTest(result.trim(), expected.trim());
     if (!this.hasAttribute("open") && this.getAttribute("state").startsWith("ok"))
       win?.window?.close();
   }
 
-  diffTest() {
-    if (this.expected.textContent == this.result.textContent)
-      return this.setAttribute("state", "ok");
-    let diffs = myersDiff(this.expected.textContent, this.result.textContent);
+  diffTest(result, expected) {
+    if (result == expected)
+      return (this.diff.innerText = result), this.setAttribute("state", "ok");
+    let diffs = myersDiff(expected, result);
     diffs = diffs.map(([, , type, , value]) =>
       ({ type: type === "-" ? "added" : type === "+" ? "removed" : "", value }));
+    const state = diffs.some(({ type, value }) => type && value.trim()) ? "error" : "ok2";
     this.diff.innerHTML = diffs
       .map(({ type, value }) => `<span class="${type}">${value}</span>`)
       .join("");
-    if (!diffs.some(({ type, value }) => type && value.trim()))
-      return this.setAttribute("state", "ok2");
-    return this.setAttribute("state", "error");
+    return this.setAttribute("state", state);
   }
 }
 
