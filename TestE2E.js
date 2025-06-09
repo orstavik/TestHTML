@@ -136,7 +136,12 @@ export class TestHTMLe2e extends HTMLElement {
       console.error(e);
       result = e;
     }
-    try { result = JSON.stringify(result, null, 2); } catch (e) { result = e.toString(); }
+    try {
+      if (typeof result != "string")
+        result = JSON.stringify(result, null, 2);
+    } catch (e) {
+      result = e.toString();
+    }
     this.shadowRoot.querySelector("#result").textContent = result;
     this.diffTest();
     if (!this.hasAttribute("open") && this.getAttribute("state").startsWith("ok"))
