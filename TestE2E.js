@@ -59,11 +59,11 @@ class WindowWrapper {
 
   async ready(ms = 100, i = 100) {
     await new Promise(r => setTimeout(r, ms));
-    for (; i ; i--) {
+    for (; i; i--) {
       try {
         if (this.window.document.readyState === 'complete') return true;
-      } catch (err) { 
-        console.error('Error accessing document.readyState:', err); 
+      } catch (err) {
+        console.error('Error accessing document.readyState:', err);
       }
       await new Promise(r => setTimeout(r, ms));
     }
@@ -98,9 +98,13 @@ export class TestHTMLe2e extends HTMLElement {
     this.expected = this.shadowRoot.querySelector("#expected");
     this.diff = this.shadowRoot.querySelector("#diff");
     this.button.addEventListener("click", this.runTest.bind(this));
-    const expected = this.querySelector("script[expected]")?.textContent;
-    if (expected)
+    let expected = this.querySelector("[expected]");
+    expected = expected?.content?.textContent ?? expected?.textContent ?? "";
+    try {
       this.expected.textContent = JSON.stringify(JSON.parse(expected), null, 2);
+    } catch (e) {
+      this.expected.textContent = expected;
+    }
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
