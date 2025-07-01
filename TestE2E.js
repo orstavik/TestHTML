@@ -151,7 +151,7 @@ export class TestHTMLe2e extends HTMLElement {
       ({ type: type === "-" ? "added" : type === "+" ? "removed" : "", value }));
     const state = diffs.some(({ type, value }) => type && value.trim()) ? "error" : "ok2";
     this.diff.innerHTML = diffs
-      .map(({ type, value }) => `<span class="${type}">${value}</span>`)
+      .map(({ type, value }) => `<span class="${type}">${value.replaceAll("<", "&lt;")}</span>`)
       .join("");
     return this.setAttribute("state", state);
   }
