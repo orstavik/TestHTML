@@ -1,4 +1,4 @@
-import { myersDiff } from 'https://cdn.jsdelivr.net/gh/orstavik/mymy@v1/src/myerLifting2.js';
+import { myersDiff } from 'https://cdn.jsdelivr.net/gh/orstavik/making-a@7/difference.js';
 
 class WindowWrapper {
   constructor(win) {
