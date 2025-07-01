@@ -125,8 +125,7 @@ export class TestHTMLe2e extends HTMLElement {
       console.error(e);
       result = e;
     }
-    const expectedEl = this.querySelector("[expected]");
-    let expected = expectedEl instanceof HTMLTemplateElement ? expectedEl.innerHTML : expectedEl.textContent;
+    let expected = await this.getExpected();
     if (typeof result === "object") {
       result = JSON.stringify(result, null, 2);
       expected = JSON.stringify(JSON.parse(expected), null, 2);
@@ -134,6 +133,14 @@ export class TestHTMLe2e extends HTMLElement {
     this.diffTest(result.trim(), expected.trim());
     if (!this.hasAttribute("open") && this.getAttribute("state").startsWith("ok"))
       win?.window?.close();
+  }
+
+  async getExpected() {
+    const expectedAt = this.getAttribute("expected");
+    if (expectedAt)
+      return await (await fetch(expectedAt)).text();
+    const expectedEl = this.querySelector("[expected]");
+    return expectedEl instanceof HTMLTemplateElement ? expectedEl.innerHTML : expectedEl.textContent;
   }
 
   diffTest(result, expected) {
